@@ -26,11 +26,11 @@ const App = () => {
   const [ballY, setBallY] = useState(new Animated.Value(0));
 
   useEffect(() => {
-    Animated.timing(ballY, {
-      toValue: 500,
-      duration: 1000,
+    Animated.decay(ballY, {
+      velocity: 0.5,
     }).start();
   }, [ballY]);
+
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.ball, { top: ballY }]} />
