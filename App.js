@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
 
 const App = () => {
   const [ballY, setBallY] = useState(new Animated.Value(0));
+  const [ballX, setBallX] = useState(Animated.divide(ballY, 2));
 
   useEffect(() => {
     Animated.decay(ballY, {
@@ -33,7 +34,7 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.ball, { top: ballY }]} />
+      <Animated.View style={[styles.ball, { top: ballY, left: ballX }]} />
     </View>
   );
 };
