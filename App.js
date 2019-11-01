@@ -7,7 +7,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet, Animated, PanResponder } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -23,29 +23,60 @@ const styles = StyleSheet.create({
 });
 
 const App = () => {
-  const [ballY, setBallY] = useState(new Animated.Value(0));
-  const [ballX, setBallX] = useState(new Animated.Value(0));
+  const [ball, setBallY] = useState(
+    new Animated.ValueXY({
+      x: 0,
+      y: 0,
+    })
+  );
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: (e, gestureState) => true,
+    onPanResponderMove: Animated.event(
+      [
+        null,
+        {
+          dx: ball.x,
+          dy: ball.y,
+        },
+      ],
+      {
+        listener: (e, gestureState) => {
+          console.log(gestureState);
+        },
+      }
+    ),
+    onPanResponderGrant: (e, gestureState) => {
+      ball.setOffset({
+        x: ball.x._value,
+        y: ball.y._value,
+      });
+      ball.setValue({
+        x: 0,
+        y: 0,
+      });
+    },
+    onPanResponderRelease: () => {
+      ball.flattenOffset();
+    },
+  });
 
-  useEffect(() => {
-    Animated.timing(ballY, {
-      toValue: 500,
-      duration: 1000,
-    }).start();
-  }, [ballX, ballY]);
+  useEffect(() => {}, []);
 
   return (
     <View style={styles.container}>
       <Animated.View
+        {...panResponder.panHandlers}
         style={[
           styles.ball,
           {
-            top: ballY,
-            left: ballX,
-            opacity: ballY.interpolate({
-              inputRange: [0, 280, 300],
-              outputRange: [1, 1, 0.2],
-              extrapolate: 'clamp',
-            }),
+            transform: [
+              {
+                translateX: ball.x,
+              },
+              {
+                translateY: ball.y,
+              },
+            ],
           },
         ]}
       />
